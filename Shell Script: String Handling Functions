@@ -1,0 +1,30 @@
+#!/bin/bash
+
+# String Handling Functions
+
+# Concatenate two strings
+string1="Hello"
+string2="World"
+concatenated_string="$string1 $string2"
+echo "Concatenated String: $concatenated_string"
+
+# Find the length of a string
+string_length=${#string1}
+echo "Length of '$string1': $string_length"
+
+# Extract a substring
+substring=${string1:1:3}
+echo "Substring of '$string1' (starting from index 1, length 3): $substring"
+
+# Replace a substring
+original_string="I love programming"
+replaced_string=${original_string/programming/scripting}
+echo "Replaced String: $replaced_string"
+
+# Convert to uppercase
+uppercase_string=${string1^^}
+echo "Uppercase String: $uppercase_string"
+
+# Convert to lowercase
+lowercase_string=${string2,,}
+echo "Lowercase String: $lowercase_string"
