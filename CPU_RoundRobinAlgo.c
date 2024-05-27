@@ -1,3 +1,4 @@
+
 #include <stdio.h>
 #include <stdlib.h>
 
@@ -8,6 +9,12 @@ struct process {
     int turnTime;
     int waitingTime;
     int startTime;
+};
+
+struct ganttChart {
+    int processID;
+    int startTime;
+    int endTime;
 };
 
 int main() {
@@ -40,34 +47,39 @@ int main() {
     int current_time = 0;
     int completed = 0;
     int mark[100] = {0};
+
+    struct ganttChart gantt[100];
+    int ganttIndex = 0;
+
     while (completed != n) {
         index = q[++front];
 
         // to find start time of process
         if (BT[index] == p[index].burstTime) {
-            p[index].startTime = current_time > p[index].arrivalTime ? current_time
-                                                                     : p[index].arrivalTime;
+            p[index].startTime = current_time > p[index].arrivalTime ? current_time : p[index].arrivalTime;
             current_time = p[index].startTime;
         }
 
-        // check if process if finished nor not
-        if (BT[index] > tq) {
-            BT[index] -= tq;
-            current_time += tq;
-        } else {
-            current_time += BT[index];
+        int executionTime = (BT[index] > tq) ? tq : BT[index];
+        BT[index] -= executionTime;
+        current_time += executionTime;
 
+        gantt[ganttIndex].processID = index + 1;
+        gantt[ganttIndex].startTime = current_time - executionTime;
+        gantt[ganttIndex].endTime = current_time;
+        ganttIndex++;
+
+        // check if process is finished or not
+        if (BT[index] == 0) {
             p[index].finishTime = current_time;
             p[index].turnTime = p[index].finishTime - p[index].arrivalTime;
             p[index].waitingTime = p[index].turnTime - p[index].burstTime;
             total_WT += p[index].waitingTime;
             total_TAT += p[index].turnTime;
             completed++;
-
-            BT[index] = 0;
         }
 
-        // add new processes to queue of at <= CT
+        // add new processes to queue if arrival time <= current time
         for (int i = 1; i < n; i++) {
             if (BT[i] > 0 && p[i].arrivalTime <= current_time && !mark[i]) {
                 mark[i] = 1;
@@ -75,7 +87,7 @@ int main() {
             }
         }
 
-        // enter current process again in queue if it not finished
+        // re-enter current process into queue if it is not finished
         if (BT[index] > 0) {
             q[++rear] = index;
         }
@@ -83,20 +95,22 @@ int main() {
 
     avgWT = (float)total_WT / n;
     avgTAT = (float)total_TAT / n;
-    printf("\n");
-    printf("Process\tAT\tBT\tFT\tTAT\tWT\n");
+
+    printf("\nProcess\tAT\tBT\tFT\tTAT\tWT\n");
     for (int i = 0; i < n; i++) {
-        printf("%d\t%d\t%d\t%d\t%d\t%d\n",
-               i + 1,
-               p[i].arrivalTime,
-               p[i].burstTime,
-               p[i].finishTime,
-               p[i].turnTime,
-               p[i].waitingTime);
+        printf("%d\t%d\t%d\t%d\t%d\t%d\n", i + 1, p[i].arrivalTime, p[i].burstTime, p[i].finishTime, p[i].turnTime, p[i].waitingTime);
     }
-    printf("\n");
-    printf("Average Waiting Time = %.2f\n", avgWT);
+
+    printf("\nAverage Waiting Time = %.2f\n", avgWT);
     printf("Average Turnaround Time = %.2f\n", avgTAT);
+
+    // Print Gantt Chart
+    printf("\nGantt Chart:\n");
+    for (int i = 0; i < ganttIndex; i++) {
+        printf("| P%d (%d - %d) ", gantt[i].processID, gantt[i].startTime, gantt[i].endTime);
+    }
+    printf("|\n");
+
     return 0;
 }
- //input 4 && arrival : 0 1 2 4 && brust : 5 4 2 1 && TQ = 2
+//  //input 4 && arrival : 0 1 2 4 && brust : 5 4 2 1 && TQ = 2
