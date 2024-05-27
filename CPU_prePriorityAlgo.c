@@ -1,3 +1,4 @@
+
 #include <stdio.h>
 
 typedef struct Process {
@@ -10,10 +11,17 @@ typedef struct Process {
     int waiting_time;
 } Process;
 
-void preemptive_priority(Process processes[], int n, float *avg_turnaround_time, float *avg_waiting_time) {
+typedef struct GanttChart {
+    int pid;
+    int start_time;
+    int end_time;
+} GanttChart;
+
+void preemptive_priority(Process processes[], int n, float *avg_turnaround_time, float *avg_waiting_time, GanttChart gantt[], int *gantt_size) {
     int time = 0;
     int completed = 0;
     float total_turnaround_time = 0, total_waiting_time = 0;
+    int prev_process = -1;
 
     while (completed != n) {
         int highest_priority = -1;
@@ -33,6 +41,16 @@ void preemptive_priority(Process processes[], int n, float *avg_turnaround_time,
             continue;
         }
 
+        if (prev_process != next_process) {
+            gantt[*gantt_size].pid = processes[next_process].pid;
+            gantt[*gantt_size].start_time = time;
+            if (*gantt_size > 0) {
+                gantt[*gantt_size - 1].end_time = time;
+            }
+            (*gantt_size)++;
+            prev_process = next_process;
+        }
+
         processes[next_process].remaining_time--;
 
         if (processes[next_process].remaining_time == 0) {
@@ -41,6 +59,8 @@ void preemptive_priority(Process processes[], int n, float *avg_turnaround_time,
             processes[next_process].waiting_time = processes[next_process].turnaround_time - processes[next_process].burst_time;
             total_turnaround_time += processes[next_process].turnaround_time;
             total_waiting_time += processes[next_process].waiting_time;
+
+            gantt[*gantt_size - 1].end_time = time + 1;
         }
 
         time++;
@@ -56,6 +76,8 @@ int main() {
     scanf("%d", &n);
 
     Process processes[n];
+    GanttChart gantt[100];
+    int gantt_size = 0;
 
     for (int i = 0; i < n; i++) {
         printf("\nEnter details for process P%d:\n", i + 1);
@@ -72,7 +94,7 @@ int main() {
     }
 
     float avg_turnaround_time, avg_waiting_time;
-    preemptive_priority(processes, n, &avg_turnaround_time, &avg_waiting_time);
+    preemptive_priority(processes, n, &avg_turnaround_time, &avg_waiting_time, gantt, &gantt_size);
 
     printf("\nPreemptive Priority Algorithm - \n\n");
     printf("PID\tAT\tBT\tPriority\tTAT\tWT\n");
@@ -82,6 +104,13 @@ int main() {
     }
 
     printf("Average Turnaround Time: %.2f\nAverage Waiting Time: %.2f\n", avg_turnaround_time, avg_waiting_time);
+
+    // Print Gantt Chart
+    printf("\nGantt Chart:\n");
+    for (int i = 0; i < gantt_size; i++) {
+        printf("| P%d (%d - %d) ", gantt[i].pid, gantt[i].start_time, gantt[i].end_time);
+    }
+    printf("|\n");
 
     return 0;
 }
