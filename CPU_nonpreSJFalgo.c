@@ -1,5 +1,11 @@
 #include <stdio.h>
 
+struct gantt {
+    int process_id;
+    int start_time;
+    int end_time;
+};
+
 int main() {
     int total_BT = 0, smallest, n;
     int tat = 0, wt = 0;
@@ -8,6 +14,8 @@ int main() {
     scanf("%d", &n);
 
     int burst_time[n], remaining_bt[n], at[n], completion_time[n], turnaround_time[n], waiting_time[n];
+    struct gantt g[100]; // Array to store Gantt chart events
+    int gantt_index = 0; // Gantt chart index
 
     // Input burst times
     printf("\nBurst time\n");
@@ -40,6 +48,10 @@ int main() {
             continue;
         }
 
+        // Record Gantt chart event
+        g[gantt_index].process_id = smallest;
+        g[gantt_index].start_time = time;
+
         time += remaining_bt[smallest];
         completion_time[smallest] = time;
         turnaround_time[smallest] = completion_time[smallest] - at[smallest];
@@ -49,6 +61,10 @@ int main() {
         wt += waiting_time[smallest];
         remaining_bt[smallest] = 0;
         completed++;
+
+        // Update end time in Gantt chart event
+        g[gantt_index].end_time = time;
+        gantt_index++;
     }
 
     // Display results
@@ -61,7 +77,18 @@ int main() {
     printf("\n\nAverage waiting time = %.2f", wt * 1.0 / n);
     printf("\nAverage turnaround time = %.2f", tat * 1.0 / n);
 
+    // Print Gantt chart
+    printf("\nGantt Chart:\n");
+    for (int i = 0; i < gantt_index; i++) {
+        printf("| P%d ", g[i].process_id);
+    }
+    printf("|\n");
+    for (int i = 0; i < gantt_index; i++) {
+        printf("%d\t", g[i].start_time);
+    }
+    printf("%d\n", g[gantt_index - 1].end_time);
+
     return 0;
 }
 
-//Input : 5  &&  6 2 8 3 4   &&   2 5 1 0 4
+// Input : 5  &&  6 2 8 3 4   &&   2 5 1 0 4
