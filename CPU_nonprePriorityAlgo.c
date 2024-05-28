@@ -1,85 +1,67 @@
 #include <stdio.h>
 
-void main() {
-    int n = 0; // Processes Number
-    int CPU_CT = 0; // CPU_CT Current time
-    printf("Enter number of Processes: ");
+int main() {
+    int total_BT = 0, smallest, n;
+    int tat = 0, wt = 0;
+
+    printf("\nEnter the number of processes: \n");
     scanf("%d", &n);
 
-    int AT[n]; // Arrival Time
-    int BT[n]; // Burst Time
-    int PP[n]; // Process Priority
-    int originalPP[n]; // To keep original Process Priority
-    int turnaroundTime[n];
-    int waittingTime[n];
-    int completed[n]; // To mark processes as completed
+    int burst_time[n], remaining_bt[n], at[n], completion_time[n], turnaround_time[n], waiting_time[n];
 
-    printf("\nEnter Arrival Times:\n");
+    // Input burst times
+    printf("\nBurst time\n");
     for (int i = 0; i < n; i++) {
-        printf("Enter arrival time for process P%d: ", i + 1);
-        scanf("%d", &AT[i]);
+        printf("Enter burst time for process P%d: ", i);
+        scanf("%d", &burst_time[i]);
+        remaining_bt[i] = burst_time[i]; // Initialize remaining burst times
+        total_BT += burst_time[i];
     }
 
-    printf("\nEnter Burst Times:\n");
+    // Input arrival times
+    printf("\nArrival time\n");
     for (int i = 0; i < n; i++) {
-        printf("Enter burst time for process P%d: ", i + 1);
-        scanf("%d", &BT[i]);
+        printf("Enter arrival time for process P%d: ", i);
+        scanf("%d", &at[i]);
     }
 
-    printf("\nEnter Priorities:\n");
-    for (int i = 0; i < n; i++) {
-        printf("Enter priority for process P%d: ", i + 1);
-        scanf("%d", &PP[i]);
-        originalPP[i] = PP[i]; // Store original priority
-    }
+    remaining_bt[n] = 9999; // Sentinel value for comparison
 
-    // Initialize the completed array to 0
-    for (int i = 0; i < n; i++) {
-        completed[i] = 0;
-    }
-
-    int NoP = n; // Number of Processes
-
-    while (NoP > 0 && CPU_CT <= 1000) {
-        int minPriority = n + 1; // Initialize with a value higher than the maximum possible priority
-        int chosenProcess = -1; // To store the index of the chosen process
-
-        // Find the process with the highest priority (lowest value) that has arrived and not completed
+    int time = 0, completed = 0;
+    while (completed < n) {
+        smallest = n;
         for (int i = 0; i < n; i++) {
-            if (AT[i] <= CPU_CT && PP[i] < minPriority && !completed[i]) {
-                minPriority = PP[i];
-                chosenProcess = i;
-            }
+            if (at[i] <= time && remaining_bt[i] > 0 && remaining_bt[i] < remaining_bt[smallest])
+                smallest = i;
         }
 
-        if (chosenProcess == -1) {
-            CPU_CT++;
+        if (smallest == n) {
+            time++;
             continue;
         }
 
-        // Process the chosen process
-        waittingTime[chosenProcess] = CPU_CT - AT[chosenProcess];
-        CPU_CT += BT[chosenProcess];
-        turnaroundTime[chosenProcess] = CPU_CT - AT[chosenProcess];
-        
-        // Mark the process as completed
-        completed[chosenProcess] = 1;
-        NoP--;
+        time += remaining_bt[smallest];
+        completion_time[smallest] = time;
+        turnaround_time[smallest] = completion_time[smallest] - at[smallest];
+        waiting_time[smallest] = turnaround_time[smallest] - burst_time[smallest];
+
+        tat += turnaround_time[smallest];
+        wt += waiting_time[smallest];
+        remaining_bt[smallest] = 0;
+        completed++;
     }
 
-    printf("\n\n\tAT\tBT\tPP\tTAT\tWT\n\n");
+    // Display results
+    printf("\nProcess\t\tBT\t\tAT\t\tCT\t\tTAT\t\tWT\n");
     for (int i = 0; i < n; i++) {
-        printf("P%d\t%d\t%d\t%d\t%d\t%d\n", i + 1, AT[i], BT[i], originalPP[i], turnaroundTime[i], waittingTime[i]);
+        printf("P%d\t|\t%d\t|\t%d\t|\t%d\t|\t%d\t|\t%d\n", i, burst_time[i], at[i], completion_time[i], turnaround_time[i], waiting_time[i]);
     }
 
-    float AvgWT = 0;
-    float AVGTaT = 0;
-    for (int i = 0; i < n; i++) {
-        AvgWT += waittingTime[i];
-        AVGTaT += turnaroundTime[i];
-    }
+    // Display average times
+    printf("\n\nAverage waiting time = %.2f", wt * 1.0 / n);
+    printf("\nAverage turnaround time = %.2f", tat * 1.0 / n);
 
-    printf("Avg. Turnaround Time = %.2f\nAvg. Waiting Time = %.2f\n", AVGTaT / n, AvgWT / n);
+    return 0;
 }
 
-//input 5 && arrviavl : 0 1 2 3 5  && brust : 3 4 6 4 2  && priority : 3 2 4 6 10 
+//Input : 5  &&  6 2 8 3 4   &&   2 5 1 0 4
