@@ -1,0 +1,188 @@
+1. **Change your password**:
+    ```sh
+    passwd
+    ```
+    This command prompts you to enter the current password followed by the new password twice to change your password.
+
+2. **Display the system’s date**:
+    ```sh
+    date
+    ```
+    This command displays the current system date and time.
+
+3. **Count the number of lines in the /etc/passwd file**:
+    ```sh
+    wc -l /etc/passwd
+    ```
+    This command uses `wc` (word count) with the `-l` option to count the number of lines in the `/etc/passwd` file.
+
+4. **Find out who else is on the system**:
+    ```sh
+    who
+    ```
+    This command displays information about users currently logged into the system.
+
+5. **Direct the output of the man pages for the date command to a file named mydate**:
+    ```sh
+    man date > mydate
+    ```
+    This command redirects (`>`) the output of the `man` (manual) pages for the `date` command into a file named `mydate`.
+
+6. **Create a subdirectory called mydir**:
+    ```sh
+    mkdir mydir
+    ```
+    This command creates a new directory named `mydir`.
+
+7. **Move the file mydate into the new subdirectory**:
+    ```sh
+    mv mydate mydir/
+    ```
+    This command moves the file `mydate` into the `mydir` directory.
+
+8. **Go to the subdirectory mydir and copy the file mydate to a new file called ourdate**:
+    ```sh
+    cd mydir
+    cp mydate ourdate
+    ```
+    These commands change the current directory to `mydir` and then copy `mydate` to a new file named `ourdate`.
+
+9. **List the contents of mydir**:
+    ```sh
+    ls
+    ```
+    This command lists the contents of the current directory, which is `mydir`.
+
+10. **Do a long listing on the file ourdate and note the permissions**:
+    ```sh
+    ls -l ourdate
+    ```
+    This command lists the details of the file `ourdate` in long format, showing file permissions, owner, size, and modification date.
+
+11. **Display the name of the current directory starting from the root**:
+    ```sh
+    pwd
+    ```
+    This command prints the current working directory's full path starting from the root.
+
+12. **Move the files in the directory mydir back to your home directory**:
+    ```sh
+    mv mydir/* ~/
+    ```
+    This command moves all files from `mydir` to the home directory (`~`).
+
+13. **Display the first 5 lines of mydate**:
+    ```sh
+    head -n 5 mydate
+    ```
+    This command displays the first 5 lines of the file `mydate`.
+
+14. **Display the last 8 lines of mydate**:
+    ```sh
+    tail -n 8 mydate
+    ```
+    This command displays the last 8 lines of the file `mydate`.
+
+15. **Remove the directory mydir**:
+    ```sh
+    rmdir mydir
+    ```
+    This command removes the `mydir` directory. Note: it must be empty to remove it.
+
+16. **Redirect the output of the long listing of files to a file named list**:
+    ```sh
+    ls -l > list
+    ```
+    This command redirects the output of a long listing of files to a file named `list`.
+
+17. **Concatenate files capitals1, capitals2, and capitals3 and redirect the output to a file named capitals**:
+    ```sh
+    cat capitals1 capitals2 capitals3 > capitals
+    ```
+    This command concatenates (`cat`) the contents of `capitals1`, `capitals2`, and `capitals3` and redirects (`>`) the output to a file named `capitals`.
+
+18. **Concatenate the file capitals2 at the end of file capitals**:
+    ```sh
+    cat capitals2 >> capitals
+    ```
+    This command appends (`>>`) the contents of `capitals2` to the end of the `capitals` file.
+
+19. **Give read and write permissions to all users for the file capitals**:
+    ```sh
+    chmod 666 capitals
+    ```
+    This command changes the permissions of the file `capitals` to read and write for all users.
+
+20. **Give read permissions only to the owner of the file capitals**:
+    ```sh
+    chmod 400 capitals
+    ```
+    This command changes the permissions of the file `capitals` to read-only for the owner.
+
+    **Open the file, make some changes, and try to save it**:
+    - Open the file with `vim` or another editor, attempt to make changes, and try to save. You will get a "permission denied" error due to the file's read-only status.
+
+21. **Create an alias to concatenate the 3 files capitals1, capitals2, capitals3 and redirect the output to a file named capitals. Activate the alias and make it run**:
+    ```sh
+    alias myconcat='cat capitals1 capitals2 capitals3 > capitals'
+    myconcat
+    ```
+    This command creates an alias `myconcat` that performs the concatenation and then runs the alias.
+
+22. **Find out the number of times the string “the” appears in the file mydate**:
+    ```sh
+    grep -o "the" mydate | wc -l
+    ```
+    This command searches for the string "the" in `mydate`, prints each occurrence on a new line (`-o`), and counts the number of lines with `wc -l`.
+
+23. **Find out the line numbers on which the string “date” exists in mydate**:
+    ```sh
+    grep -n "date" mydate
+    ```
+    This command searches for the string "date" in `mydate` and shows the line numbers (`-n`) where it appears.
+
+24. **Print all lines of mydate except those that have the letter “i” in them**:
+    ```sh
+    grep -v "i" mydate
+    ```
+    This command prints all lines from `mydate` except those containing the letter "i" (`-v` inverts the match).
+
+25. **List the words of 4 letters from the file mydate**:
+    ```sh
+    grep -o '\b\w\{4\}\b' mydate
+    ```
+    This command searches for words of exactly 4 letters (`\b\w\{4\}\b`) in `mydate` and prints each on a new line (`-o`).
+
+26. **List 5 states in northeast India in a file mystates. List their corresponding capitals in a file mycapitals. Use the paste command to join the 2 files**:
+    ```sh
+    echo -e "Assam\nManipur\nMeghalaya\nMizoram\nNagaland" > mystates
+    echo -e "Dispur\nImphal\nShillong\nAizawl\nKohima" > mycapitals
+    paste mystates mycapitals
+    ```
+    This command creates `mystates` with 5 states and `mycapitals` with their capitals, then joins them side by side using `paste`.
+
+27. **Use the cut command to print the 1st and 3rd columns of the /etc/passwd file for all students in this class**:
+    ```sh
+    cut -d ':' -f 1,3 /etc/passwd
+    ```
+    This command extracts the 1st (username) and 3rd (user ID) fields from `/etc/passwd`, assuming ':' as the delimiter.
+
+28. **Count the number of people logged in and also trap the users in a file using the tee command**:
+    ```sh
+    who | tee users_logged_in | wc -l
+    ```
+    This command lists the users currently logged in (`who`), writes the output to `users_logged_in` using `tee`, and counts the number of users (`wc -l`).
+
+29. **Convert the contents of mystates into uppercase**:
+    ```sh
+    tr '[:lower:]' '[:upper:]' < mystates > mystates_upper
+    ```
+    This command converts the contents of `mystates` to uppercase using `tr` and redirects the output to `mystates_upper`.
+
+30. **Create any two files & display the common values between them**:
+    ```sh
+    echo -e "apple\nbanana\ncherry" > file1
+    echo -e "banana\ncherry\ndate" > file2
+    comm -12 <(sort file1) <(sort file2)
+    ```
+    This command creates `file1` and `file2` with sample values, then displays the common lines between the sorted files using `comm -12`.
